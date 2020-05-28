@@ -1,0 +1,89 @@
+{% extends "base.html" %} {% block content %}
+<body>
+  <div id="form_wrapper">
+    <div id="form_left">
+      <img
+        src="{{ url_for('static', filename='poker.jpg') }}"
+        alt="Planning Poker"
+      />
+    </div>
+    <div id="form_right">
+      <h1>Planning Poker</h1>
+      <div class="input_container">
+        <i class="fas fa-user"></i>
+        <input
+          laceholder="session"
+          type="text"
+          value="ROOM CODE"
+          id="input_room"
+          class="input_field"
+        />
+      </div>
+      <div class="input_container">
+        <i class="fas fa-user"></i>
+        <input
+          placeholder="NAME"
+          type="text"
+          name="user"
+          id="input_user"
+          class="input_field"
+          required
+        />
+      </div>
+      <input
+        type="submit"
+        value="PLAY"
+        id="input_play"
+        class="input_field"
+        onclick="joinRoom()"
+      />
+      <input
+        type="submit"
+        value="CREATE ROOM"
+        id="input_create"
+        class="input_field"
+        onclick="createRoom()"
+      />
+    </div>
+  </div>
+</body>
+
+<script type="text/javascript" charset="utf-8">
+  var socket = io.connect(
+    "http://" + document.domain + ":" + location.port + "/events"
+  );
+  // verify our websocket connection is established
+  socket.on("connect", function () {
+    console.log("Websocket connected!");
+  });
+  // message handler for the 'join_room' channel
+  socket.on("joined", function (msg) {
+    console.log(msg);
+  });
+
+  socket.on("status", function (msg) {
+    console.log(msg);
+  });
+
+  socket.on("error", function (msg) {
+    console.log(msg);
+  });
+
+  // createGame onclick - emit a message on the 'create' channel to
+  // create a new game with default parameters
+  function joinRoom() {
+    console.log("Play...");
+    user = document.getElementById("input_user").value;
+    room = document.getElementById("input_room").value;
+    socket.emit("joined", { user: user, room: room });
+  }
+
+  // createGame onclick - emit a message on the 'create' channel to
+  // create a new game with default parameters
+  function createRoom() {
+    console.log("Play...");
+    user = document.getElementById("input_user").value;
+    socket.emit("create", { user: user, room: room });
+  }
+</script>
+{% endblock %}
